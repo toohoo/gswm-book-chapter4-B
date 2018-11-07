@@ -4,8 +4,9 @@ pipeline {
     stages {
         stage('build') {
             steps {
+                echo 'Hello Shell 0'
                 sh 'cmd.exe /c echo "Hello Shell from CMD"'
-                echo 'Hello Shell'
+                echo 'Hello Shell 2'
                 sh 'cd'
                 sh 'mvn --version'
             }
