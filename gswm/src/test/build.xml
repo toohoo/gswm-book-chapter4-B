@@ -1,0 +1,91 @@
+<project name="junit-example">
+  <property name="main.src.dir" value="../../src/main/java"/>
+  <property name="main.build.dir" value="../../target/classes"/>
+  <property name="test.src.dir" value="../../src/test/java"/>
+  <property name="test.build.dir" value="../../target/test-classes"/>
+  <property name="test.report.dir" value="../../target/reports"/>
+  <property name="junit.plugin.dir" value="../../plugins/junit"/>
+  <property name="junit.plugin.rootrel.dir" value="/devtools/test_jenkins/.jenkins/plugins/junit"/>
+  <property name="junit.plugin.rootabs.dir" value="c:/temp/test_jenkins/.jenkins/plugins/junit"/>
+
+  <path id="classpath.test">
+    <pathelement location="c:/Program Files (x86)/Jenkins/war/WEB-INF/lib/junit-4.12.jar"/>
+    <pathelement location="c:/Program Files (x86)/Jenkins/war/WEB-INF/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${main.build.dir}"/>
+
+    <pathelement location="${junit.plugin.dir}/WEB-INF/lib/junit.jar"/>
+    <pathelement location="${junit.plugin.rootrel.dir}/WEB-INF/lib/junit.jar"/>
+    <pathelement location="${junit.plugin.rootabs.dir}/WEB-INF/lib/junit.jar"/>
+
+<!--    <pathelement location="${junit.plugin.dir}/WEB-INF/lib"/>-->
+<!--    <pathelement location="${junit.plugin.rootrel.dir}/WEB-INF/lib"/>-->
+<!--    <pathelement location="${junit.plugin.rootabs.dir}/WEB-INF/lib"/>-->
+
+<!--    <pathelement location="../../plugins/junit/WEB-INF/lib"/>-->
+<!--    <pathelement location="../../plugins/junit/WEB-INF/lib/junit.jar"/>-->
+  </path>
+
+  <target name="compile">
+    <mkdir dir="${main.build.dir}"/>
+    <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="false"/>
+  </target>
+
+  <target name="test-compile" depends="compile">
+    <mkdir dir="${test.build.dir}"/>
+    <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" includeantruntime="false">
+        <!--classpath refid="classpath.test"/-->
+
+        <classpath>
+          <path refid="classpath.test"/>
+          <pathelement location="${test.build.dir}"/>
+
+<!--			<fileset dir="${junit.plugin.rootrel.dir}">-->
+			<fileset dir="${junit.plugin.rootabs.dir}">
+	            <include name="**/junit.jar" />
+	        </fileset>
+
+        </classpath>
+
+<!--        <classpath>-->
+<!--          <path refid="classpath.test"/>-->
+<!--          <pathelement location="**/junit.jar"/>-->
+<!--        </classpath>-->
+
+    </javac>
+  </target>
+
+  <target name="test" depends="test-compile">
+    <mkdir dir="${test.report.dir}"/>
+    <junit printsummary="on" haltonfailure="yes" fork="true">
+        <classpath>
+          <path refid="classpath.test"/>
+          <pathelement location="${test.build.dir}"/>
+          <pathelement location="junit.jar"/>
+
+			<fileset dir="${junit.plugin.dir}">
+	            <include name="**/junit.jar" />
+	        </fileset>
+
+        </classpath>
+        <formatter type="brief" usefile="false" />
+        <formatter type="plain" usefile="false"/> <!-- neu -->
+        <formatter type="xml"/> <!-- neu -->
+        <batchtest todir="${test.report.dir}">
+            <fileset dir="${test.src.dir}" includes="**/*Test.java" />
+        </batchtest>
+    </junit>
+  </target>
+
+  <target name="report" depends="test">
+    <mkdir dir="${test.report.dir}"/>
+        <!-- selbst_eingefuegt -->
+        <junitreport todir="${test.report.dir}">
+            <fileset dir="${test.report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report todir="${test.report.dir}/html"/>
+        </junitreport>
+        <!-- /selbst_eingefuegt -->
+  </target>
+  
+</project>
