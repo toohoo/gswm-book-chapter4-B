@@ -4,6 +4,8 @@ pipeline {
     stages {
         stage('build') {
             steps {
+                echo 'Hello Shell'
+                sh 'cd'
                 sh 'mvn --version'
             }
         }
